@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">HampHack2017</string>
+    <string name="num_people_spinner_label">Number of People:</string>
+    <string name="delay_label">Picture delay (seconds):</string>
+    <string name="insufficient_camera_message">Either your device does not have a camera, or its camera does not support face recognition.</string>
+    <string name="insufficient_camera_button_text">OK</string>
+</resources>
