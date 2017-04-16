@@ -1,7 +1,8 @@
 <resources>
-    <string name="app_name">HampHack2017</string>
+    <string name="app_name">Cassium</string>
     <string name="num_people_spinner_label">Number of People:</string>
     <string name="delay_label">Picture delay (seconds):</string>
     <string name="insufficient_camera_message">Either your device does not have a camera, or its camera does not support face recognition.</string>
     <string name="insufficient_camera_button_text">OK</string>
+    <string name="indico_api_key">25b4ecc0c0518f9347d1151138cdfb44</string>
 </resources>

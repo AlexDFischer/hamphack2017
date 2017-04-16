@@ -2,26 +2,21 @@ package me.alexfischer.hamphack2017;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.hardware.Camera;
 import android.util.Log;
 import android.view.*;
-
-import java.io.IOException;
 
 /** A basic Camera preview class */
 public class CameraPreviewView extends SurfaceView implements SurfaceHolder.Callback {
     private SurfaceHolder holder;
     private Camera camera;
-    private FaceIdentifierView faceIdentifierView;
+    private PreviewOverlayView previewOverlayView;
     private final int numPeople;
-    private final int delay;
 
-    public CameraPreviewView(Context context, Camera camera, FaceIdentifierView faceIdentifierView, int numPeople, int delay) {
+    public CameraPreviewView(Context context, Camera camera, PreviewOverlayView previewOverlayView, int numPeople) {
         super(context);
         this.camera = camera;
-        this.faceIdentifierView = faceIdentifierView;
+        this.previewOverlayView = previewOverlayView;
         Log.d(Util.logtag, "CameraPreviewView constructor called");
 
         // Install a SurfaceHolder.Callback so we get notified when the
@@ -31,19 +26,18 @@ public class CameraPreviewView extends SurfaceView implements SurfaceHolder.Call
         // deprecated setting, but required on Android versions prior to 3.0
         holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         this.numPeople = numPeople;
-        this.delay = delay;
     }
 
     public void surfaceCreated(SurfaceHolder holder) {
         Log.d(Util.logtag, "surfaceCreated called");
         // The Surface has been created, now tell the camera where to draw the preview.
         try {
-            setCameraDisplayOrientation((Activity)getContext(), backFacingCameraId(), camera);
+            //setCameraDisplayOrientation((Activity)getContext(), backFacingCameraId(), camera);
 
             camera.setPreviewDisplay(holder);
             camera.startPreview();
-
-            this.camera.setFaceDetectionListener(new FaceDetector(this.faceIdentifierView, this.numPeople, new MyPictureCallback((Activity)getContext()), (Activity)getContext(), delay));
+            ((CameraActivity)getContext()).faceDetector = new FaceDetector(this.previewOverlayView, this.numPeople, new MyPictureCallback((CameraActivity)getContext()), (CameraActivity)getContext());
+            this.camera.setFaceDetectionListener(((CameraActivity)getContext()).faceDetector);
             camera.startFaceDetection();
         } catch (Exception e) {
             Log.d(Util.logtag, "Error setting camera preview: " + e.getMessage());
@@ -75,11 +69,11 @@ public class CameraPreviewView extends SurfaceView implements SurfaceHolder.Call
 
         // start preview with new settings
         try {
-            setCameraDisplayOrientation((Activity)getContext(), backFacingCameraId(), camera);
+            //setCameraDisplayOrientation((Activity)getContext(), backFacingCameraId(), camera);
             camera.setPreviewDisplay(holder);
             camera.startPreview();
-
-            this.camera.setFaceDetectionListener(new FaceDetector(this.faceIdentifierView, this.numPeople, new MyPictureCallback((Activity)getContext()), (Activity)getContext(), delay));
+            ((CameraActivity)getContext()).faceDetector = new FaceDetector(this.previewOverlayView, this.numPeople, new MyPictureCallback((CameraActivity)getContext()), (CameraActivity)getContext());
+            this.camera.setFaceDetectionListener(((CameraActivity)getContext()).faceDetector);
             camera.startFaceDetection();
         } catch (Exception e){
             Log.d(Util.logtag, "Error starting camera preview: " + e.getMessage());

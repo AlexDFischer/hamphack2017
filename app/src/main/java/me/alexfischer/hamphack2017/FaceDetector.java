@@ -7,34 +7,35 @@ import android.widget.TextView;
 
 public class FaceDetector implements Camera.FaceDetectionListener
 {
-    private final FaceIdentifierView faceIdentifierView;
+    private final PreviewOverlayView previewOverlayView;
     private final int numPeople;
     private final Camera.PictureCallback pictureCallback;
-    private final Activity activity;
-    private boolean tookPicture = false;
+    private final CameraActivity activity;
+    public boolean tookPicture = false;
     private final TextView numPeopleTextView;
-    private final int delay;
 
-    public FaceDetector(FaceIdentifierView faceIdentifierView, int numPeople, Camera.PictureCallback pictureCallback, Activity activity, int delay)
+    public FaceDetector(PreviewOverlayView previewOverlayView, int numPeople, Camera.PictureCallback pictureCallback, CameraActivity activity)
     {
-        this.faceIdentifierView = faceIdentifierView;
+        this.previewOverlayView = previewOverlayView;
         this.numPeople = numPeople;
         this.pictureCallback = pictureCallback;
         this.activity = activity;
         this.numPeopleTextView = (TextView)activity.findViewById(R.id.numPeopleTextView);
-        this.delay = delay;
     }
 
     @Override
     public void onFaceDetection(Camera.Face[] faces, Camera camera)
     {
-        this.faceIdentifierView.setFaces(faces);
-        numPeopleTextView.setText(Util.numPeoplePresentText.replace("{0}", Integer.toString(faces.length)).replace("{1}", Integer.toString(numPeople)));
-        if (faces.length == numPeople && !tookPicture)
-        {
-            Log.i(Util.logtag, "detected right number of faces");
-            new PictureCountdownTimer(1000L * delay, 1000L * delay, camera, new MyPictureCallback(activity)).start();
-            this.tookPicture = true;
+        if (!tookPicture) {
+            this.previewOverlayView.postInvalidate();
+            numPeopleTextView.setText(Util.numPeoplePresentText.replace("{0}", Integer.toString(faces.length)).replace("{1}", Integer.toString(numPeople)));
+            activity.faces = faces;
+            if (faces.length == numPeople) {
+                tookPicture = true;
+                Log.i(Util.logtag, "detected right number of faces: " + faces.length);
+                camera.takePicture(null, null, new MyPictureCallback(activity));
+                camera.stopFaceDetection();
+            }
         }
     }
 }

@@ -6,6 +6,8 @@ import android.hardware.Camera;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
@@ -16,6 +18,10 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Remove title bar
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        //Remove notification bar
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
         ArrayAdapter<Integer> adapter;
         // determine if camera can run & if facial recognition works
@@ -43,15 +49,6 @@ public class MainActivity extends Activity {
             Log.e(Util.logtag, "exception when opening camera");
             this.insufficientCameraExit();
         }
-        // set up delay spinner
-        Integer[] delayOptions = new Integer[Util.maxDelay];
-        for (int i = 0; i < Util.maxDelay; i++)
-        {
-            delayOptions[i] = i + 1;
-        }
-        adapter = new ArrayAdapter<Integer>(this, android.R.layout.simple_spinner_item, delayOptions);
-        Spinner delaySpinner = (Spinner)findViewById(R.id.delaySpinner);
-        delaySpinner.setAdapter(adapter);
     }
 
     public void onCameraButtonClick(View view)
@@ -61,11 +58,6 @@ public class MainActivity extends Activity {
         Spinner spinner = (Spinner)findViewById(R.id.numPeopleSpinner);
         int numPeople = (Integer)spinner.getSelectedItem();
         intent.putExtra("numPeople", numPeople);
-
-        spinner = (Spinner)findViewById(R.id.delaySpinner);
-        int delay = (Integer)spinner.getSelectedItem();
-        intent.putExtra("delay", delay);
-
         startActivity(intent);
     }
 
